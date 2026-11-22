@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grounded in Contact</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a left-aligned lab notebook. One wide column for figures,
+   a narrower measure for prose, and a four-panel bench animation up top. */
+:root {
+  --bg: #f3f5f6;
+  --surface: #ffffff;
+  --ink: #14181c;
+  --muted: #56616b;
+  --line: #d5dbdf;
+  --accent: #1f8478;          /* the teal of the paper's Table I */
+  --accent-soft: #dff0ed;
+  --det: #6f7479;
+  --gauss: #1f77b4;
+  --mdn: #d62728;
+  --st: #2ca02c;
+  --fm: #8a5fc0;
+  --right: #2563eb;
+  --right2: #7c3aed;
+  --ok: #1a8f4c;
+  --bad: #d23b3b;
+  --plate: #ffffff;           /* figures keep a white plate in both themes */
+  --font-display: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #101416;
+    --surface: #171c1f;
+    --ink: #e9eef0;
+    --muted: #9aa7b0;
+    --line: #2b3439;
+    --accent: #58c2b3;
+    --accent-soft: #17302d;
+    --det: #a3a9ae;
+    --gauss: #5aa9e0;
+    --mdn: #f0696a;
+    --st: #5cc45c;
+    --fm: #b796e6;
+    --right: #6ea0ff;
+  --right2: #b197fc;
+    --ok: #4ccb88;
+    --bad: #f47272;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #101416;
+  --surface: #171c1f;
+  --ink: #e9eef0;
+  --muted: #9aa7b0;
+  --line: #2b3439;
+  --accent: #58c2b3;
+  --accent-soft: #17302d;
+  --det: #a3a9ae;
+  --gauss: #5aa9e0;
+  --mdn: #f0696a;
+  --st: #5cc45c;
+  --fm: #b796e6;
+  --right: #6ea0ff;
+  --right2: #b197fc;
+  --ok: #4ccb88;
+  --bad: #f47272;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.6;
+}
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+.measure { max-width: none; }
+p, li, figcaption { text-wrap: pretty; }
+figcaption strong { display: block; font-family: var(--font-display); font-size: 1.15rem; line-height: 1.3; font-weight: 700; color: var(--ink); margin-bottom: 8px; line-height: 1.4; }
+.lede { text-wrap: balance; }
+@media (max-width: 900px) { br.wide { display: none; } }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2.1rem, 5.4vw, 3.5rem); line-height: 1.04; font-weight: 700; letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.8rem, 3.6vw, 2.5rem); line-height: 1.15; font-weight: 700; letter-spacing: -0.01em; }
+h3 { font-size: 1.08rem; font-weight: 700; }
+p { margin: 0; }
+a { color: var(--accent); }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+header.top { padding: 64px 0 48px; background: radial-gradient(120% 140% at 50% 0%, color-mix(in srgb, var(--accent) 13%, var(--surface)) 0%, var(--surface) 70%); border-bottom: 1px solid var(--line); box-shadow: 0 10px 30px -24px rgba(20, 24, 28, 0.35); position: relative; z-index: 1; }
+.kicker {
+  font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.04em;
+  color: var(--accent); text-transform: uppercase; margin-bottom: 14px;
+}
+.subtitle { font-size: clamp(1.1rem, 2.2vw, 1.35rem); color: var(--muted); margin-top: 14px; max-width: none; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 10px; margin-top: 22px; }
+.chip {
+  font-family: var(--font-mono); font-size: 0.8rem;
+  border: 1px solid var(--line); background: var(--surface);
+  padding: 5px 10px; border-radius: 999px; color: var(--muted);
+}
+
+section { padding: 84px 0; }
+section:first-of-type { padding-top: 34px; }
+section + section { border-top: 0; }
+main > section:nth-of-type(even) { background: color-mix(in srgb, var(--surface) 70%, var(--bg)); }
+.stack { display: flex; flex-direction: column; gap: 16px; }
+.lede { font-size: 1.1rem; }
+
+/* bench animation */
+.decwrap { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
+.rowlab { text-align: center; margin: 6px 0 0; font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.decs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.decs.two { grid-template-columns: repeat(2, minmax(0, 1fr)); width: calc((100% - 24px) * 2 / 3 + 12px); align-self: center; }
+.decs canvas { width: 100%; aspect-ratio: 5 / 3; display: block; }
+@media (max-width: 800px) { .decs, .decs.two { grid-template-columns: minmax(0, 1fr); width: 100%; } }
+.bench { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.panel {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+  padding: 14px 14px 12px; display: flex; flex-direction: column; gap: 6px; min-width: 0;
+  box-shadow: 0 1px 2px rgba(20, 24, 28, 0.05), 0 10px 28px -20px rgba(20, 24, 28, 0.35);
+}
+.panel.reality { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 10px 28px -20px rgba(20, 24, 28, 0.35); }
+.panel h3 { display: flex; align-items: center; gap: 8px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+.panel .say { font-size: 1rem; font-weight: 500; color: var(--ink); min-height: 3.2em; text-wrap: balance; }
+.panel canvas { width: 100%; aspect-ratio: 14 / 9; display: block; }
+.tally { font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.bench-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.benchbar { display: flex; justify-content: center; flex-wrap: wrap; align-items: center; gap: 14px; font-size: 0.85rem; color: var(--muted); margin: -4px 0 4px; }
+.mini { font: inherit; font-size: 0.85rem; font-weight: 500; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 4px 14px; cursor: pointer; }
+.mini:hover { border-color: var(--accent); color: var(--accent); }
+.mini:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.tabs { margin-top: 28px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.skilltab { position: relative; overflow: hidden; text-align: left; cursor: pointer; font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px 16px; display: flex; flex-direction: column; gap: 2px; }
+.skilltab b { font-family: var(--font-display); font-size: 1.5rem; line-height: 1.1; }
+.skilltab span { font-size: 0.92rem; color: var(--muted); }
+.skilltab i { position: absolute; left: 0; bottom: 0; height: 4px; width: calc(var(--p, 0) * 100%); background: var(--accent); }
+.skilltab:hover { border-color: var(--accent); }
+.skilltab[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.skilltab[aria-pressed="true"] b { color: var(--accent); }
+.skilltab[aria-pressed="false"] { opacity: 0.7; }
+.skilltab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button.ctl {
+  font: inherit; font-size: 0.9rem; font-weight: 500; cursor: pointer;
+  color: var(--ink); background: var(--surface);
+  border: 1px solid var(--ink); border-radius: 8px; padding: 6px 14px;
+}
+button.ctl:hover { background: var(--accent-soft); }
+.note { font-size: 0.9rem; color: var(--muted); }
+
+/* figures */
+figure { margin: 0; }
+.plate { background: var(--plate); border: 1px solid var(--line); border-radius: 12px; padding: 18px; overflow-x: auto; box-shadow: 0 1px 2px rgba(20, 24, 28, 0.05), 0 10px 28px -18px rgba(20, 24, 28, 0.35); }
+.plate img { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+figcaption { font-size: 0.92rem; line-height: 1.7; color: var(--muted); margin: 18px auto 0; max-width: 900px; text-align: center; }
+.split { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 28px; align-items: start; }
+
+/* decoders */
+.cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-left-width: 4px; border-radius: 8px; padding: 14px 16px; }
+.card p { font-size: 0.95rem; color: var(--muted); margin-top: 6px; }
+.card.mdn { border-left-color: var(--mdn); }
+.card.st { border-left-color: var(--st); }
+.card.fm { border-left-color: var(--fm); }
+
+/* findings */
+.findings { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; list-style: none; margin: 0; padding: 0; }
+.findings li { --c: var(--accent); background: color-mix(in srgb, var(--c) 11%, var(--surface)); border: 1px solid color-mix(in srgb, var(--c) 35%, transparent); border-top: 4px solid var(--c); border-radius: 10px; padding: 16px 18px; font-size: 0.98rem; }
+.findings li:nth-child(2) { --c: var(--fm); }
+.findings li:nth-child(3) { --c: var(--gauss); }
+.findings li b { color: var(--c); }
+mark, .abs .hl em { --hl: #ffd43b; background: linear-gradient(transparent 56%, var(--hl) 56%, var(--hl) 92%, transparent 92%); color: inherit; font-weight: 700; font-style: normal; padding: 0 2px; border-radius: 0; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+@media (prefers-color-scheme: dark) { mark, .abs .hl em { --hl: rgba(242, 201, 76, 0.55); } }
+.findings mark { --c: inherit; }
+.eyebrow { font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin: 0 0 -6px; }
+.abstext { margin: 0 auto; max-width: 78ch; font-size: 1.06rem; line-height: 1.75; color: var(--ink); text-align: justify; hyphens: auto; -webkit-hyphens: auto; text-wrap: wrap; }
+.glance { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.gcard, .gres { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; }
+.gcard span, .gres > span { display: block; font-family: var(--font-mono); font-size: 0.76rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+.gcard p { margin: 0; font-family: var(--font-display); font-size: 1.3rem; line-height: 1.35; font-weight: 600; text-wrap: balance; }
+.gres .stats { margin-bottom: 0; }
+.fullabs { border-top: 1px solid var(--line); padding-top: 12px; }
+.fullabs summary { cursor: pointer; font-weight: 600; color: var(--accent); font-size: 0.95rem; }
+.fullabs p { margin: 10px 0 0; font-size: 0.95rem; line-height: 1.65; color: var(--muted); }
+@media (max-width: 800px) { .glance { grid-template-columns: minmax(0, 1fr); } }
+.abs { margin: 0; display: flex; flex-direction: column; gap: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.abs > div { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 20px; padding: 18px 22px; }
+.abs > div + div { border-top: 1px solid var(--line); }
+.abs dt { font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); padding-top: 4px; }
+.abs dd { margin: 0; }
+.abs .hl { font-family: var(--font-display); font-size: 1.35rem; line-height: 1.25; font-weight: 700; margin: 0 0 8px; text-wrap: balance; }
+
+.abs .body { margin: 0; font-size: 0.93rem; line-height: 1.6; color: var(--muted); }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 22px auto 0; max-width: 960px; }
+.stats > div { --c: var(--accent); border-top: 3px solid var(--c); background: var(--surface); border: 1px solid var(--line); border-top: 3px solid var(--c); border-radius: 10px; padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 6px; text-align: center; }
+.stats small { font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--c); }
+.stats strong { font-family: var(--font-display); font-size: 1.25rem; line-height: 1.25; text-wrap: balance; }
+.stats strong em { font-style: normal; color: var(--c); }
+.stats span { font-size: 0.85rem; color: var(--muted); line-height: 1.4; }
+@media (max-width: 800px) { .stats { grid-template-columns: minmax(0, 1fr); } }
+
+@media (max-width: 700px) { .abs > div { grid-template-columns: minmax(0, 1fr); gap: 4px; } }
+.key { text-wrap: wrap; font-size: 1.2rem; line-height: 1.45; font-weight: 500; margin: 0; }
+.card.mdn mark { --c: var(--mdn); } .card.st mark { --c: var(--st); } .card.fm mark { --c: var(--fm); }
+.findings b { display: block; font-family: var(--font-display); font-size: 1.05rem; margin-bottom: 4px; }
+
+/* property table */
+.verdict { margin: 64px auto 4px; max-width: 820px; width: 100%; text-align: center; color: var(--ink); text-wrap: balance; font-family: var(--font-display); font-size: 1.35rem; line-height: 1.35; font-weight: 600; }
+.tablewrap.small { max-width: 760px; width: 100%; margin: 0 auto; align-self: center; }
+.cmp { min-width: 600px; font-size: 0.88rem; }
+.cmp thead th { font-family: var(--font-body); font-size: 0.88rem; font-weight: 600; border-top: 0; text-align: center; vertical-align: bottom; padding: 10px 10px 8px; }
+.cmp th, .cmp td { text-align: center; padding: 7px 10px; }
+.cmp tbody th { text-align: left; color: var(--muted); font-weight: 500; padding-left: 16px; white-space: nowrap; }
+.cmp tr.dec td { font-size: 0.82rem; color: var(--muted); }
+.cmp .d { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+.cmp .ck { color: var(--ink); font-weight: 700; font-size: 1rem; }
+.cmp .x { color: var(--muted); font-size: 0.95rem; }
+/* One accent for strengths, the error red for weaknesses, everything else stays neutral. */
+.cmp td.best { color: var(--accent); font-weight: 700; background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.cmp td.best .ck { color: var(--accent); }
+.cmp td.worst, .cmp .w { color: var(--bad); font-weight: 600; }
+.cmp td.worst .x { color: var(--bad); }
+.cmp tr.key-row th { color: var(--ink); font-weight: 700; }
+.cmp tr.key-row td, .cmp tr.key-row th { border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); }
+.cmp tr.key-row .ck, .cmp tr.key-row .x { font-size: 1.15rem; }
+.tablewrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 1px 2px rgba(20, 24, 28, 0.05), 0 10px 28px -20px rgba(20, 24, 28, 0.35); }
+table { border-collapse: collapse; width: 100%; min-width: 620px; font-size: 1rem; }
+th, td { padding: 14px 12px; text-align: center; border-bottom: 1px solid var(--line); }
+tbody tr:last-child td, tbody tr:last-child th { border-bottom: 0; }
+th:first-child, td:first-child { text-align: left; padding-left: 20px; }
+thead th { font-family: var(--font-display); font-size: 1rem; font-weight: 700; color: var(--ink); border-bottom: 2px solid var(--line); border-top: 4px solid var(--c, transparent); padding-top: 14px; }
+thead th:first-child { font-family: var(--font-mono); font-size: 0.78rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+tbody th { font-weight: 600; text-align: left; }
+/* The three properties the paper highlights get a tinted row. */
+tbody tr.hl { background: color-mix(in srgb, var(--accent) 7%, transparent); }
+tbody tr.hl th { box-shadow: inset 4px 0 0 var(--accent); }
+.yes, .no { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; font-weight: 700; font-size: 0.95rem; color: var(--surface); }
+.yes { background: var(--ok); }
+.no { background: var(--bad); }
+.plain { color: var(--muted); }
+.pill { display: inline-block; min-width: 86px; font-size: 0.88rem; font-weight: 600; padding: 4px 12px; border-radius: 999px; background: color-mix(in srgb, var(--muted) 16%, transparent); color: var(--ink); }
+.pill.good { background: var(--ok); color: var(--surface); }
+.pill.bad { background: var(--bad); color: var(--surface); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+
+/* pick bars */
+.bars { display: flex; flex-direction: column; gap: 9px; }
+.bar-row { display: grid; grid-template-columns: 9.5em minmax(0, 1fr) 3.4em; gap: 10px; align-items: center; font-size: 0.95rem; }
+.track { background: var(--surface); border: 1px solid var(--line); border-radius: 5px; height: 26px; overflow: hidden; }
+.fill { height: 100%; border-radius: 4px 0 0 4px; transform: scaleX(0); transform-origin: left center; transition: transform 1.3s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.bars.go .fill { transform: none; }
+.bar-row:nth-child(2) .fill { transition-delay: 0.12s; } .bar-row:nth-child(3) .fill { transition-delay: 0.24s; }
+.bar-row:nth-child(4) .fill { transition-delay: 0.36s; } .bar-row:nth-child(5) .fill { transition-delay: 0.48s; }
+@media (prefers-reduced-motion: reduce) { .fill { transform: none; transition: none; } }
+.bar-row .num { font-family: var(--font-mono); font-size: 0.85rem; font-variant-numeric: tabular-nums; text-align: right; }
+
+footer { padding: 28px 0 56px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.9rem; }
+
+@media (max-width: 900px) {
+  .bench { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .split { grid-template-columns: minmax(0, 1fr); }
+  .cards, .findings { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 460px) {
+  .bench { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  #bench .panel { padding: 10px 8px 8px; }
+  #bench .panel h3 { font-size: 0.85rem; }
+  #bench .panel .say { font-size: 0.78rem; min-height: 0; }
+  .bar-row { grid-template-columns: 7.2em minmax(0, 1fr) 3.2em; }
+}
+.rv { opacity: 0; transform: translateY(22px); transition: opacity 0.55s ease, transform 0.55s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.rv.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .rv { opacity: 1; transform: none; transition: none; } }
+/* Title: a gripper lowers "Grounded", lets go, and the word lands on the ground line with a small bounce. */
+#title { position: relative; display: inline-block; cursor: pointer; padding-bottom: 0.12em; margin-top: 1.3em; }
+#title::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; border-radius: 2px; background: var(--accent); opacity: 0.5; transform-origin: 18% 50%; }
+#title .gwrap { position: relative; display: inline-block; }
+#title .gword { position: relative; display: inline-block; transform-origin: 50% 100%; z-index: 1; }
+#title .gg { position: absolute; left: 50%; bottom: 52%; width: 1.1em; height: 1.69em; fill: var(--accent); opacity: 0; pointer-events: none; overflow: visible; z-index: 2; }
+#title .gg .dk { fill: color-mix(in srgb, var(--accent) 70%, #000); }
+#title .gg .arm { opacity: 0.85; }
+#title .gg g { transform-box: fill-box; }
+#title .gshadow { position: absolute; left: 8%; right: 8%; bottom: -0.16em; height: 0.12em; border-radius: 50%; background: var(--ink); opacity: 0; filter: blur(3px); }
+#title .puff { position: absolute; bottom: -0.02em; width: 0.22em; height: 0.22em; border-radius: 50%; border: 3px solid var(--accent); opacity: 0; }
+#title .puff.l { left: -0.1em; } #title .puff.r { right: -0.1em; }
+#title.land .gword { animation: wdrop 3.4s 0.15s both; }
+#title.land .gg { animation: gmove 3.4s 0.15s both; }
+#title.land .gg .f1 { animation: fl 3.4s 0.15s both; }
+#title.land .gg .f2 { animation: fr 3.4s 0.15s both; }
+#title.land .gshadow { animation: gshadow 3.4s 0.15s both; }
+#title.land .puff.l { animation: puffl 3.4s 0.15s both; }
+#title.land .puff.r { animation: puffr 3.4s 0.15s both; }
+#title.land::after { animation: thud 3.4s 0.15s both; }
+/* Pick: the word lies askew to the left. The gripper comes down, closes, lifts it.
+   Place: it carries the word to its spot, lowers it, lets go, and the word settles. */
+@keyframes wdrop {
+  0%, 22% { transform: translate(-1.3em, 0) rotate(-7deg); }
+  38% { transform: translate(-1.3em, -0.6em) rotate(-2deg); animation-timing-function: ease-in-out; }
+  58% { transform: translate(0, -0.6em) rotate(1.5deg); animation-timing-function: ease-in-out; }
+  66%, 70% { transform: translate(0, -0.28em) rotate(0); animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  77% { transform: translate(0, 0) scale(1.05, 0.9); animation-timing-function: ease-out; }
+  83% { transform: translate(0, -0.07em) scale(0.99, 1.02); animation-timing-function: ease-in; }
+  89%, 100% { transform: none; }
+}
+@keyframes gmove {
+  0% { opacity: 0; transform: translate(calc(-50% - 1.3em), -1.3em); animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1); }
+  16%, 22% { opacity: 1; transform: translate(calc(-50% - 1.3em), 0) rotate(-7deg); }
+  38% { transform: translate(calc(-50% - 1.3em), -0.6em) rotate(-2deg); animation-timing-function: ease-in-out; }
+  58% { transform: translate(-50%, -0.6em) rotate(1.5deg); animation-timing-function: ease-in-out; }
+  66%, 72% { opacity: 1; transform: translate(-50%, -0.28em); animation-timing-function: cubic-bezier(0.4, 0, 0.6, 1); }
+  90% { opacity: 1; transform: translate(-50%, -1.1em); }
+  100% { opacity: 0; transform: translate(-50%, -1.4em); }
+}
+@keyframes fl { 0%, 16% { transform: translateX(-35%) rotate(8deg); } 22%, 68% { transform: none; } 73%, 100% { transform: translateX(-35%) rotate(8deg); } }
+@keyframes fr { 0%, 16% { transform: translateX(35%) rotate(-8deg); } 22%, 68% { transform: none; } 73%, 100% { transform: translateX(35%) rotate(-8deg); } }
+@keyframes gshadow {
+  0%, 22% { opacity: 0.2; transform: translateX(-1.3em) scaleX(0.95); }
+  38% { opacity: 0.06; transform: translateX(-1.3em) scaleX(0.6); }
+  58% { opacity: 0.06; transform: scaleX(0.6); }
+  70% { opacity: 0.1; transform: scaleX(0.75); }
+  77% { opacity: 0.22; transform: scaleX(1); }
+  100% { opacity: 0.12; transform: scaleX(0.95); }
+}
+@keyframes puffl { 0%, 76% { opacity: 0; transform: translate(0, 0) scale(0.3); } 79% { opacity: 0.8; } 90%, 100% { opacity: 0; transform: translate(-0.35em, -0.12em) scale(1.4); } }
+@keyframes puffr { 0%, 76% { opacity: 0; transform: translate(0, 0) scale(0.3); } 79% { opacity: 0.8; } 90%, 100% { opacity: 0; transform: translate(0.35em, -0.12em) scale(1.4); } }
+@keyframes thud { 0%, 76% { opacity: 0.5; transform: none; } 78% { opacity: 1; transform: scaleY(1.8); } 88%, 100% { opacity: 0.5; transform: none; } }
+@media (prefers-reduced-motion: reduce) { #title *, #title::after { animation: none !important; } #title .gg, #title .puff { opacity: 0; } }
+/* Byline */
+.authors { margin: 22px 0 0; font-size: 1.12rem; display: flex; flex-wrap: wrap; justify-content: flex-end; column-gap: 22px; row-gap: 4px; }
+.authors .au { white-space: nowrap; }
+.authors a, .authors .au > span { color: var(--ink); text-decoration: none; font-weight: 500; }
+.authors a:hover { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.authors sup { font-size: 0.7em; color: var(--muted); margin-left: 2px; }
+.affil { margin: 6px 0 0; font-size: 0.92rem; color: var(--muted); text-align: right; }
+.affil sup { font-size: 0.75em; }
+.links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.btn { display: inline-flex; align-items: baseline; gap: 8px; padding: 9px 18px; border-radius: 999px; background: var(--ink); color: var(--bg); font-weight: 600; text-decoration: none; font-size: 0.95rem; }
+.btn small { font-size: 0.75rem; font-weight: 500; opacity: 0.7; }
+.btn.off { background: var(--surface); color: var(--muted); border: 1px solid var(--line); cursor: default; }
+/* Short headline text is centered. Paragraphs, captions and tables stay left-aligned for reading. */
+.wrap.stack > h2, .wrap.stack > .eyebrow { text-align: center; }
+.wrap.stack > p.key { text-align: center; max-width: 900px; margin-left: auto; margin-right: auto; text-wrap: balance; }
+/* Header centered, as on most project pages. */
+header.top .wrap { text-align: center; }
+header.top .authors { justify-content: center; }
+header.top .affil { text-align: center; }
+header.top .links { justify-content: center; }
+.playbtn { display: inline-flex; align-items: center; gap: 7px; font: inherit; font-size: 0.85rem; font-weight: 600; color: var(--surface); background: var(--accent); border: 0; border-radius: 999px; padding: 6px 14px 6px 11px; cursor: pointer; }
+.playbtn svg { width: 13px; height: 13px; fill: currentColor; }
+.playbtn:hover { filter: brightness(1.1); }
+.playbtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* Short labels inside the animation cards are centered too. */
+.skilltab { text-align: center; align-items: center; }
+#bench .panel h3, #bench .panel .say, .decs .panel h3, .decs .panel .say { text-align: center; }
+#bench .panel h3, .decs .panel h3 { justify-content: center; }
+figure.narrow { max-width: 640px; width: 100%; margin-left: auto; margin-right: auto; }
+/* Model names carry their color everywhere they appear in text. */
+.m { color: inherit; font-weight: 700; white-space: nowrap; }
+.m[style*="--det"], .m[style*="--gauss"] { font-weight: inherit; }
+/* Figures stop shrinking at a readable size. On narrower screens the plate scrolls sideways instead. */
+.plate img { min-width: 600px; }
+/* Sits on the figure's own Decoder frame line, so the decoder (the only part that differs between models) reads as highlighted. */
+.netfig { position: relative; min-width: 600px; }
+.netfig .netring { position: absolute; box-sizing: border-box; left: calc(46.36% - 1.5px); width: calc(35.15% + 3px); top: calc(1.47% - 1.5px); height: calc(98.09% + 3px);
+  border: 3px solid #1f5fc4; border-radius: 10px; box-shadow: 0 0 0 3px rgba(31, 95, 196, .16), 0 0 14px rgba(31, 95, 196, .22); pointer-events: none; }
+.plate.vid { padding: 0; overflow: hidden; }
+.plate video { display: block; width: 100%; height: auto; }
+.vids { display: grid; gap: 14px; max-width: 1000px; width: 100%; margin: 0 auto; }
+.legend { display: flex; justify-content: center; flex-wrap: wrap; gap: 14px; margin: 0; font-size: 0.85rem; font-weight: 700; color: var(--ink); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: 0; }
+.subhead { margin: 22px 0 0; text-align: center; font-size: 1.15rem; }
+.predbox { max-width: 1000px; width: 100%; margin: 0 auto; background: var(--plate); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; box-shadow: 0 1px 2px rgba(20, 24, 28, 0.05), 0 10px 28px -18px rgba(20, 24, 28, 0.35); }
+.ptabs { display: flex; border-bottom: 1px solid var(--line); background: var(--surface); overflow-x: auto; }
+.ptab { position: relative; flex: 1 1 0; min-width: 120px; font: inherit; cursor: pointer; background: none; border: 0; padding: 12px 10px 14px; display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--muted); }
+.ptab b { font-size: 1.02rem; color: inherit; }
+.ptab span { font-size: 0.78rem; color: var(--muted); }
+/* The underline marks the open tab; while examples advance on their own it fills as the clip plays. */
+.ptab::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; background: var(--accent); transform: scaleX(0); transform-origin: left; }
+.ptab[aria-selected="true"] { color: var(--accent); background: var(--plate); }
+.ptab[aria-selected="true"]::after { transform: scaleX(var(--p, 1)); }
+.ptab:hover { color: var(--ink); }
+.ptab[aria-selected="true"]:hover { color: var(--accent); }
+.ptab + .ptab { border-left: 1px solid var(--line); }
+.ptab:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.predview video { display: block; width: 100%; height: auto; }
+.predview video[hidden] { display: none; }
+.pnote { margin: 0; padding: 8px 12px 10px; text-align: center; font-size: 0.82rem; color: var(--muted); border-top: 1px solid var(--line); }
+.plate img[src="fig-brier.png"] { min-width: 420px; }
+.chips { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 5px; margin-top: 4px; }
+.stats .chip2, .chip2 { font-size: 0.78rem; line-height: 1.5; font-weight: 700; color: var(--mc); background: color-mix(in srgb, var(--mc) 14%, var(--surface)); border-radius: 999px; padding: 2px 9px; white-space: nowrap; }
+.stats .chips .vs { font-size: 0.75rem; color: var(--muted); margin: 0 2px; }
+.stats .of { font-size: 0.75rem; color: var(--muted); }
+.stats .who { margin: 2px 0 0; font-size: 0.85rem; color: var(--muted); }
+.stats .who b { color: var(--ink); }
+.stats .who b { display: block; }
+.stats .vs2 { display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; margin: 1px 0; }
+.stats .of2 { font-size: 0.75rem; }
+.stats .who.inl b { display: inline; }
+.stats > div { padding: 20px 20px 22px; gap: 10px; }
+.stats strong { font-size: 1.4rem; line-height: 1.3; }
+.stats .sup { margin: 0; font-size: 1rem; line-height: 1.5; color: var(--muted); }
+.stats small { font-size: 0.8rem; }
+.key b, .verdict b { font-weight: 800; color: var(--accent); }
+.wrap.stack > figure + figure, .wrap.stack > figure + .decwrap, .wrap.stack > .decwrap + figure { margin-top: 40px; }
+.wrap.stack > p.key + figure { margin-top: 12px; }
+figure { margin-bottom: 8px; }
+section[aria-labelledby="robot"] .split { align-items: center; }
+section[aria-labelledby="robot"] .split > .stack { gap: 8px; }
+/* Skill tabs stay compact so the panels below carry the weight. */
+.tabs { max-width: 720px; margin-left: auto; margin-right: auto; width: 100%; gap: 8px; }
+.skilltab { padding: 8px 12px 10px; border-radius: 10px; }
+.skilltab b { font-size: 1.08rem; }
+.skilltab span { font-size: 0.8rem; }
+figure.narrow figcaption { width: min(900px, 92vw); max-width: none; position: relative; left: 50%; transform: translateX(-50%); }
+section[aria-labelledby="robot"] .split > .stack:first-child { text-align: center; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <h1 id="title"><span class="gwrap"><svg class="gg" viewBox="0 0 60 92" aria-hidden="true">
+      <rect class="arm" x="27" y="0" width="6" height="34" rx="3"/>
+      <circle class="dk" cx="30" cy="36" r="7"/>
+      <rect x="8" y="40" width="44" height="12" rx="5"/>
+      <g class="f1"><rect x="9" y="50" width="9" height="30" rx="4"/><rect class="dk" x="13" y="64" width="5" height="16" rx="2"/></g>
+      <g class="f2"><rect x="42" y="50" width="9" height="30" rx="4"/><rect class="dk" x="42" y="64" width="5" height="16" rx="2"/></g>
+    </svg><span class="gshadow" aria-hidden="true"></span><span class="puff l" aria-hidden="true"></span><span class="puff r" aria-hidden="true"></span><span class="gword">Grounded</span></span> in Contact</h1>
+    <p class="subtitle">Reducing Floating and Interpenetration Artifacts with Multimodal Skill-Effect Models</p>
+    <p class="authors">
+      <span class="au"><a href="https://siyeonkim33.github.io" target="_blank" rel="noopener">Siyeon Kim</a><sup>1</sup></span>
+      <span class="au"><a href="https://users.cs.utah.edu/~mohanraj/" target="_blank" rel="noopener">Mohanraj Devendran Shanthi</a><sup>1,&dagger;</sup></span>
+      <span class="au"><a href="https://robot-baseball.com/" target="_blank" rel="noopener">Joseph C. Liechty</a><sup>1,&dagger;</sup></span>
+      <span class="au"><a href="https://robot-learning.cs.utah.edu/" target="_blank" rel="noopener">Tucker Hermans</a><sup>1,2</sup></span>
+    </p>
+    <p class="affil"><sup>1</sup>University of Utah&ensp;<sup>2</sup>NVIDIA Research<br><sup>&dagger;</sup>Equal contribution</p>
+    <div class="links">
+      <span class="btn off" aria-disabled="true">Paper <small>arXiv soon</small></span>
+      <span class="btn off" aria-disabled="true">Code <small>soon</small></span>
+      <span class="btn off" aria-disabled="true">Video <small>soon</small></span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<section aria-labelledby="idea">
+  <div class="wrap stack">
+    <h2 id="idea">The same skill does not always end the same way.</h2>
+    <p class="key"><b>Small variations in contact conditions or object geometry</b> produce <mark>qualitatively different object motions</mark> under nearly identical states and actions.</p>
+
+    <div class="tabs" role="group" aria-label="Skill shown in the animation">
+      <button class="skilltab" type="button" data-skill="push" aria-pressed="true"><b>Push</b><span>Push the box from the side</span><i></i></button>
+      <button class="skilltab" type="button" data-skill="pick" aria-pressed="false"><b>Pick</b><span>Grasp the object and lift it</span><i></i></button>
+      <button class="skilltab" type="button" data-skill="place" aria-pressed="false"><b>Place</b><span>Release the object above the table</span><i></i></button>
+    </div>
+    <div class="benchbar"><span id="bench-hint">Switches skills on its own. Click a skill to stay on it.</span><button class="playbtn" id="toggle" type="button" aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="2.5" width="3" height="11" rx="1"/><rect x="9.5" y="2.5" width="3" height="11" rx="1"/></svg><span>Pause</span></button></div>
+
+    <div class="bench" id="bench">
+      <div class="panel reality">
+        <h3><span class="dot" style="background:var(--ink)"></span>What happens</h3>
+        <p class="say" id="say-reality"></p>
+        <canvas data-mode="reality" role="img"></canvas>
+      </div>
+      <div class="panel">
+        <h3><span class="dot" style="background:var(--det)"></span>Deterministic</h3>
+        <p class="say" id="say-det"></p>
+        <canvas data-mode="det" role="img"></canvas>
+      </div>
+      <div class="panel">
+        <h3><span class="dot" style="background:var(--gauss)"></span>Gaussian</h3>
+        <p class="say" id="say-gauss"></p>
+        <canvas data-mode="gauss" role="img"></canvas>
+      </div>
+      <div class="panel">
+        <h3><span class="dot" style="background:var(--fm)"></span>Multimodal</h3>
+        <p class="say" id="say-multi"></p>
+        <canvas data-mode="multi" role="img"></canvas>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="abstract">
+  <div class="wrap stack">
+    <h2 id="abstract">Abstract</h2>
+    <p class="abstext">Learning to predict the effects of contact-rich manipulation skills requires models that represent distinct outcome modes rather than a single expected result. Even for basic skills such as pushing, picking, and placing, small variations in contact conditions or object geometry can produce qualitatively different object motions under nearly identical states and actions. Deterministic and Gaussian models tend to average over these alternatives or represent them as a single broad distribution, obscuring distinct modes such as sliding, toppling, and rotating. We study probabilistic skill-effect models that learn multimodal distributions over object pose changes given partial point clouds and actions. We instantiate this abstraction with three representative model classes: mixture density networks, state tokenization, and flow matching, each paired with latent dynamics for next-step prediction. Across diverse objects and skills, explicitly multimodal models predict which outcome occurs more accurately than deterministic and Gaussian baselines. In planning, flow matching significantly improves task success over the deterministic baseline on every skill and achieves the highest success on every multi-step sequence. On a real robot, probabilistic models succeed at pick about twice as often as the deterministic baseline.</p>
+    <figure style="max-width:960px;width:100%;margin-left:auto;margin-right:auto">
+      <div class="plate"><div class="netfig"><img src="fig-net-final.png" width="3600" height="1021" alt="Model overview. The state and the skill parameters are encoded, a shared dynamics model predicts a latent change, and a decoder outputs samples of the object pose change: an MDN or state-tokenization decoder, or a flow-matching decoder that integrates noise in N steps."><div class="netring" aria-hidden="true"></div></div></div>
+      <figcaption><strong>Every model shares the encoders and latent dynamics. Only the decoder differs.</strong>Sampled pose changes are composed across skills for planning.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section aria-labelledby="method">
+  <div class="wrap stack">
+    <p class="eyebrow">Method</p>
+    <h2 id="base">Single-outcome models</h2>
+    <p class="key"><b>Deterministic and Gaussian models</b> <mark>average over these alternatives</mark> or represent them as <mark>a single broad distribution</mark>.</p>
+    <div class="decs two">
+      <div class="panel"><h3><span class="dot" style="background:var(--det)"></span>Deterministic</h3><canvas data-dec="det" role="img" aria-label="A single prediction between the two outcomes."></canvas></div>
+      <div class="panel"><h3><span class="dot" style="background:var(--gauss)"></span>Gaussian</h3><canvas data-dec="gauss" role="img" aria-label="One broad distribution spread over both outcomes."></canvas></div>
+    </div>
+    <h2 id="method" style="margin-top:28px">Our probabilistic skill-effect models</h2>
+    <div id="decs" class="decwrap">
+    <div class="decs">
+      <div class="panel"><h3><span class="dot" style="background:var(--mdn)"></span>Mixture density network</h3><p class="say">A mixture of five Gaussians.</p><canvas data-dec="mdn" role="img" aria-label="Five Gaussian components move from evenly spread positions onto the two outcomes, and their sum forms two peaks."></canvas></div>
+      <div class="panel"><h3><span class="dot" style="background:var(--st)"></span>State tokenization</h3><p class="say">Probabilities over discrete tokens.</p><canvas data-dec="st" role="img" aria-label="Bars for discrete tokens rise, with the tallest bars at the two outcomes."></canvas></div>
+      <div class="panel"><h3><span class="dot" style="background:var(--fm)"></span>Flow matching</h3><p class="say">Noise carried to samples in five steps.</p><canvas data-dec="fm" role="img" aria-label="Noise samples at the bottom move upward in five steps and gather at the two outcomes."></canvas></div>
+    </div>
+    </div>
+    <p class="verdict"><b>Multimodal probabilistic models</b> <mark>represent distinct modes</mark>.<br><b>Flow matching</b> is the <mark>most accurate</mark>, and <b>the MDN</b> is the <mark>fastest to plan with</mark>.</p>
+    <div class="tablewrap small">
+      <table class="cmp">
+        <thead><tr><th scope="col"></th><th scope="col"><span class="d" style="background:var(--det)"></span>Det. / Gaussian</th><th scope="col"><span class="d" style="background:var(--mdn)"></span>MDN</th><th scope="col"><span class="d" style="background:var(--st)"></span>State tokenization</th><th scope="col"><span class="d" style="background:var(--fm)"></span>Flow matching</th></tr></thead>
+        <tbody>
+          <tr class="key-row"><th scope="row">Multimodality</th><td class="worst"><span class="x" aria-hidden="true">✕</span><span class="sr">No</span></td><td class="best"><span class="ck" aria-hidden="true">✓</span><span class="sr">Yes</span></td><td class="best"><span class="ck" aria-hidden="true">✓</span><span class="sr">Yes</span></td><td class="best"><span class="ck" aria-hidden="true">✓</span><span class="sr">Yes</span></td></tr>
+          <tr><th scope="row">Output space</th><td>Continuous</td><td>Continuous</td><td>Discrete</td><td>Continuous</td></tr>
+          <tr><th scope="row">Plausibility</th><td>Medium / <span class="w">Lower</span></td><td class="best">Higher</td><td>Medium</td><td class="best">Higher</td></tr>
+          <tr><th scope="row">Quantization-free</th><td><span class="ck" aria-hidden="true">✓</span><span class="sr">Yes</span></td><td><span class="ck" aria-hidden="true">✓</span><span class="sr">Yes</span></td><td><span class="x" aria-hidden="true">✕</span><span class="sr">No</span></td><td><span class="ck" aria-hidden="true">✓</span><span class="sr">Yes</span></td></tr>
+          <tr><th scope="row">Inference speed</th><td class="best">Fast</td><td class="best">Fast</td><td>Moderate</td><td class="worst">Slow</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="prediction">
+  <div class="wrap stack">
+    <p class="eyebrow">Prediction</p>
+    <h2 id="prediction">Simulation pose predictions</h2>
+    <div class="benchbar"><span id="pred-hint">Plays each example in turn. Click a tab to stay on it.</span><button class="playbtn" id="predtoggle" type="button" aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="2.5" width="3" height="11" rx="1"/><rect x="9.5" y="2.5" width="3" height="11" rx="1"/></svg><span>Pause</span></button></div>
+    <div class="predbox">
+      <div class="ptabs" id="predtabs" role="tablist" aria-label="Prediction example shown">
+        <button class="ptab" role="tab" type="button" data-pred="push_direction" aria-selected="true"><b>Push</b><span>Slides or topples</span><i></i></button>
+        <button class="ptab" role="tab" type="button" data-pred="push_height" aria-selected="false"><b>Push height</b><span>Bear upright or toppled</span><i></i></button>
+        <button class="ptab" role="tab" type="button" data-pred="pick" aria-selected="false"><b>Pick</b><span>Lifted or left behind</span><i></i></button>
+        <button class="ptab" role="tab" type="button" data-pred="pick_noop" aria-selected="false"><b>Pick no-op</b><span>Touched, not lifted</span><i></i></button>
+        <button class="ptab" role="tab" type="button" data-pred="place" aria-selected="false"><b>Place</b><span>Upright or on its side</span><i></i></button>
+      </div>
+      <div class="predview" id="predview">
+        <video data-pred="push_direction" src="media/pred_push_direction.mp4" muted playsinline preload="auto" aria-label="Push: a small change in contact topples the object or slides it. Predictions for a mustard bottle and a mug."></video>
+        <video data-pred="push_height" src="media/pred_push_height.mp4" muted playsinline preload="metadata" aria-label="Horizontal push: the push height decides whether the stacked bear slides upright or topples." hidden></video>
+        <video data-pred="pick" src="media/pred_pick.mp4" muted playsinline preload="metadata" aria-label="Pick: the same grasp either lifts the object or leaves it on the table." hidden></video>
+        <video data-pred="pick_noop" src="media/pred_pick_noop.mp4" muted playsinline preload="metadata" aria-label="Pick, hard no-op: the gripper touches the object but does not lift it." hidden></video>
+        <video data-pred="place" src="media/pred_place.mp4" muted playsinline preload="metadata" aria-label="Place: the release height decides whether the bottle lands upright or on its side." hidden></video>
+      </div>
+      <p class="pnote">Ground-truth outcome in gray outline, predicted samples in each model's color.</p>
+    </div>
+    <h3 class="subhead">Prediction quality</h3>
+    <p class="key"><b>Multimodal models</b> predict which outcome occurs <mark>more accurately</mark> on every skill,<br>and <b>MDN</b> and <b>flow matching</b> give the <mark>most physically plausible</mark> poses.</p>
+    <p class="legend"><span><i style="background:var(--det)"></i>Det.</span><span><i style="background:var(--gauss)"></i>Gaussian</span><span><i style="background:var(--mdn)"></i>MDN</span><span><i style="background:var(--st)"></i>ST</span><span><i style="background:var(--fm)"></i>FM</span></p>
+    <figure style="max-width:1000px;width:100%;margin-left:auto;margin-right:auto">
+      <div class="plate"><img src="media/quality_crop.png" width="1540" height="650" alt="Left: outcome-class Brier score on horizontal push, vertical push, pick, and place; the MDN, state tokenization, and flow matching score lower than both baselines, marked with stars where significant. Right: physical plausibility, Det. 62.8, Gaussian 40.7, MDN 65.2, ST 55.2, FM 68.1 percent."></div>
+    </figure>
+  </div>
+</section>
+
+<section aria-labelledby="planning">
+  <div class="wrap stack">
+    <p class="eyebrow">Planning</p>
+    <h2 id="planning">Multi-step planning in simulation</h2>
+    <p class="key"><b>A multimodal model</b> <mark>leads every multi-step sequence</mark>.</p>
+    <p class="legend"><span><i style="background:var(--det)"></i>Det.</span><span><i style="background:var(--gauss)"></i>Gaussian</span><span><i style="background:var(--mdn)"></i>MDN</span><span><i style="background:var(--st)"></i>ST</span><span><i style="background:var(--fm)"></i>FM</span></p>
+    <figure style="max-width:1000px;width:100%;margin-left:auto;margin-right:auto">
+      <div class="plate"><img src="media/multistep_crop.png" width="1540" height="600" alt="Multi-step success rate against position tolerance for four skill sequences. Flow matching, starred, is the highest curve on all four."></div>
+    </figure>
+  </div>
+</section>
+
+<section aria-labelledby="robot">
+  <div class="wrap stack">
+    <p class="eyebrow">Real robot</p>
+    <h2 id="robot">On a real robot</h2>
+    <div class="split">
+      <div class="stack"><p class="key">On pick, <b>every probabilistic model</b> succeeded <mark>about twice as often</mark> as the deterministic model.</p>
+      <p class="note">Three seen and two unseen objects, three start and goal pairs each.</p></div>
+      <div class="stack">
+        <div class="bars" role="img" aria-label="Real-robot pick successes out of 15 tasks. Deterministic 7, Gaussian 13, MDN 14, state tokenization 12, flow matching 14.">
+          <div class="bar-row"><span>Deterministic</span><div class="track"><div class="fill" style="width:46.7%;background:var(--det)"></div></div><span class="num">7/15</span></div>
+          <div class="bar-row"><span>Gaussian</span><div class="track"><div class="fill" style="width:86.7%;background:var(--gauss)"></div></div><span class="num">13/15</span></div>
+          <div class="bar-row"><span>MDN</span><div class="track"><div class="fill" style="width:93.3%;background:var(--mdn)"></div></div><span class="num">14/15</span></div>
+          <div class="bar-row"><span>State tokenization</span><div class="track"><div class="fill" style="width:80%;background:var(--st)"></div></div><span class="num">12/15</span></div>
+          <div class="bar-row"><span>Flow matching</span><div class="track"><div class="fill" style="width:93.3%;background:var(--fm)"></div></div><span class="num">14/15</span></div>
+        </div>
+      </div>
+    </div>
+    <figure style="max-width:1000px;width:100%;margin-left:auto;margin-right:auto">
+      <div class="plate vid"><video src="media/real_multistep.mp4" autoplay muted loop playsinline preload="metadata" aria-label="Push, pick, and place on the real robot for each of the five models, played at six times speed. Only flow matching completes all three steps."></video></div>
+      <figcaption><strong>Only flow matching completes all three steps,</strong> while the others miss a step or end in the wrong pose.<br>Push &rarr; pick &rarr; place from the same start toward the same goal. One run per model, each planning the whole sequence with its own predictions. Played at 6&times; speed.</figcaption>
+    </figure>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  var canvases = Array.prototype.slice.call(document.querySelectorAll("#bench canvas"));
+  var tabs = Array.prototype.slice.call(document.querySelectorAll(".tabs button[data-skill]"));
+  var toggle = document.getElementById("toggle"), hint = document.getElementById("bench-hint");
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function el(id) { return document.getElementById(id); }
+
+  // Scene units. A pose is a shift along the table, a lift above it, and a
+  // rotation about the object's bottom-right corner (how it tips over).
+  var SW = 280, SH = 180, GROUND = 148;
+  var BOX = { x: 64, w: 26, h: 56 };
+  var TRIAL = 5.4, N = 1;                 // one execution per skill that branches into both outcomes
+  var GRASP_H = 41;                       // fingertip height of the pick: a marginal grasp near the top of the object
+  var ORDER = ["push", "pick", "place"];
+  var CLOUD = 6;                          // samples drawn per distribution
+  var REAL = [0, 1];                        // what really happens: outcome A or B
+  var MODES = [0, 1];                      // which mode the multimodal model samples
+
+  function rng(seed) {
+    var s = seed >>> 0;
+    return function () { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; };
+  }
+  function gs(r) {
+    var u = Math.max(r(), 1e-9), v = r();
+    return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+  }
+  function clip(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
+  function ease(t) { t = clip(t, 0, 1); return t * t * (3 - 2 * t); }
+  function mix(a, b, f) { return { s: a.s + (b.s - a.s) * f, l: a.l + (b.l - a.l) * f, d: a.d + (b.d - a.d) * f }; }
+
+  function buildSkill(def, seed) {
+    var r1 = rng(seed), r2 = rng(seed + 17);
+    def.gauss = []; def.multi = [];
+    // Each model panel shows a set of samples from the predicted distribution, not one sample.
+    for (var i = 0; i < CLOUD; i++) {
+      def.gauss.push(def.gaussSample(r1));
+      var m = i % 2 === 0 ? def.A : def.B;
+      def.multi.push({ s: m.s + 4 * gs(r2), l: m.l > 0 ? m.l + 3 * gs(r2) : 0, d: m.d + 2.5 * gs(r2) });
+    }
+    return def;
+  }
+
+  var SKILLS = {
+    push: buildSkill({
+      start: { s: 0, l: 0, d: 0 }, A: { s: 120, l: 0, d: 0 }, B: { s: 14, l: 0, d: 90 }, det: { s: 46, l: 0, d: 45 },
+      gaussSample: function (r) { return { s: clip(46 + 24 * gs(r), -5, 95), l: 0, d: clip(45 + 27 * gs(r), -8, 100) }; },
+      labels: ["slides", "topples"], detLabel: "not a rest pose", gaussLabel: "tilted in mid-air", tally: ["slid", "toppled"],
+      say: {
+        reality: "Same action, different outcomes.",
+        det: "Averages over the alternatives.",
+        gauss: "A single broad distribution.",
+        multi: "Distinct outcome modes."
+      },
+      aria: "A gripper pushes an upright box. In some trials the box slides and stays upright, in others it topples."
+    }, 11),
+    pick: buildSkill({
+      // As in the paper's pick examples: the deterministic model commits to a lift,
+      // and the Gaussian spreads its samples below the gripper, whether or not the grasp holds.
+      start: { s: 50, l: 0, d: 0 }, A: { s: 50, l: 56, d: 0 }, B: { s: 50, l: 0, d: 0 }, det: { s: 50, l: 56, d: 0 },
+      gaussSample: function (r) { return { s: 50 + 4 * gs(r), l: clip(38 + 16 * gs(r), 4, 60), d: 7 * gs(r) }; },
+      labels: ["lifted", "not lifted"], detLabel: "lift only", gaussLabel: "floats", tally: ["lifted", "not lifted"],
+      ghostGripper: true,
+      say: {
+        reality: "Same action, different outcomes.",
+        det: "Averages over the alternatives.",
+        gauss: "A single broad distribution.",
+        multi: "Distinct outcome modes."
+      },
+      aria: "A gripper grasps an object and lifts. In some trials the object is lifted, in others it slips out and stays on the table."
+    }, 23),
+    place: buildSkill({
+      start: { s: 50, l: 44, d: 0 }, A: { s: 50, l: 0, d: 0 }, B: { s: 56, l: 0, d: 90 }, det: { s: 53, l: 0, d: 45 },
+      gaussSample: function (r) { return { s: 53 + 6 * gs(r), l: Math.max(0, 4 + 8 * gs(r)), d: clip(45 + 27 * gs(r), -8, 100) }; },
+      labels: ["lands upright", "topples"], detLabel: "not a rest pose", gaussLabel: "not a rest pose", tally: ["upright", "toppled"],
+      say: {
+        reality: "Same action, different outcomes.",
+        det: "Averages over the alternatives.",
+        gauss: "A single broad distribution.",
+        multi: "Distinct outcome modes."
+      },
+      aria: "A gripper releases an object above the table. In some trials it lands upright, in others it topples."
+    }, 37)
+  };
+  var skillName = "push", skill = SKILLS.push;
+
+  function css(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+  function rr(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  // The object: a rounded box with a band near its top, so its orientation reads at a glance.
+  function drawBox(ctx, p, o) {
+    ctx.save();
+    ctx.translate(BOX.x + BOX.w + p.s, GROUND - p.l);
+    ctx.rotate(p.d * Math.PI / 180);
+    if (o.fill) { rr(ctx, -BOX.w, -BOX.h, BOX.w, BOX.h, 4); ctx.globalAlpha = o.fa; ctx.fillStyle = o.fill; ctx.fill(); }
+    if (o.band) { rr(ctx, -BOX.w + 4, -BOX.h + 8, BOX.w - 8, 8, 2); ctx.globalAlpha = o.ba; ctx.fillStyle = o.band; ctx.fill(); }
+    rr(ctx, -BOX.w, -BOX.h, BOX.w, BOX.h, 4);
+    ctx.globalAlpha = o.la; ctx.strokeStyle = o.stroke; ctx.lineWidth = o.lw;
+    if (o.dash) ctx.setLineDash(o.dash);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // Contact shadow on the table. It fades as the object leaves the table.
+  function shadow(ctx, p, col, a) {
+    var ang = p.d * Math.PI / 180, c = Math.cos(ang), sn = Math.sin(ang);
+    var cx = BOX.x + BOX.w + p.s - (BOX.w / 2) * c + (BOX.h / 2) * sn;
+    var rx = (Math.abs(c) * BOX.w + Math.abs(sn) * BOX.h) / 2 + 4;
+    var k = Math.max(0, 1 - p.l / 70);
+    if (k <= 0) return;
+    ctx.save();
+    ctx.globalAlpha = 0.2 * a * k; ctx.fillStyle = col.ink;
+    ctx.beginPath(); ctx.ellipse(cx, GROUND + 4.5, rx * (0.7 + 0.3 * k), 3.2, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
+  // Parallel-jaw gripper. (tipX, tipY) is the midpoint between the fingertips.
+  // angle 0 points the fingers down, -90 degrees points them to the right.
+  function gripper(ctx, tipX, tipY, open, angle, color, alpha, pad) {
+    ctx.save();
+    ctx.translate(tipX, tipY); ctx.rotate(angle);
+    ctx.globalAlpha = alpha; ctx.fillStyle = color;
+    rr(ctx, -8, -58, 16, 22, 4); ctx.fill();                  // wrist
+    rr(ctx, -27, -40, 54, 13, 5); ctx.fill();                 // palm
+    rr(ctx, -open / 2 - 7, -30, 7, 30, 3); ctx.fill();        // left finger
+    rr(ctx, open / 2, -30, 7, 30, 3); ctx.fill();             // right finger
+    if (pad) {                                                // fingertip pads
+      ctx.fillStyle = pad; ctx.globalAlpha = alpha * 0.55;
+      rr(ctx, -open / 2 - 2.2, -17, 2.2, 15, 1); ctx.fill();
+      rr(ctx, open / 2, -17, 2.2, 15, 1); ctx.fill();
+      ctx.globalAlpha = alpha * 0.35;
+      ctx.beginPath(); ctx.arc(0, -33.5, 3, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function setup(cv) {
+    var rect = cv.getBoundingClientRect();
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    cv.width = Math.max(1, Math.round(rect.width * dpr));
+    cv.height = Math.max(1, Math.round(rect.height * dpr));
+    var ctx = cv.getContext("2d");
+    var k = Math.min(cv.width / SW, cv.height / SH);
+    ctx.setTransform(k, 0, 0, k, (cv.width - SW * k) / 2, (cv.height - SH * k) / 2);
+    return ctx;
+  }
+  function ground(ctx, col) {
+    // a table slab with a crisp top edge
+    ctx.save();
+    rr(ctx, 8, GROUND, SW - 16, 9, 3);
+    ctx.globalAlpha = 0.55; ctx.fillStyle = col.line; ctx.fill();
+    ctx.globalAlpha = 1; ctx.strokeStyle = col.muted; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(10, GROUND + 0.6); ctx.lineTo(SW - 10, GROUND + 0.6); ctx.stroke();
+    ctx.restore();
+  }
+  function ghostStart(ctx, col) {
+    drawBox(ctx, skill.start, { stroke: col.muted, la: 0.8, lw: 1.1, dash: [4, 4] });
+  }
+  function label(ctx, text, color, col) {
+    ctx.save();
+    ctx.font = "600 16px 'IBM Plex Sans', Arial, sans-serif";
+    var w = ctx.measureText(text).width + 22, x = SW / 2 - w / 2, y = GROUND + 11;
+    rr(ctx, x, y, w, 21, 10.5);
+    ctx.fillStyle = color; ctx.fill();
+    ctx.fillStyle = col.surface; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText(text, SW / 2, y + 11);
+    ctx.restore();
+  }
+
+  // The real execution: where the object and the gripper are at time t of a trial.
+  function realState(t, kind) {
+    var obj, tip, open, ang = 0;
+    var cx = BOX.x + BOX.w / 2;
+    if (skillName === "push") {
+      var ap = ease(t / 0.55), pu = ease((t - 0.55) / 1.15);
+      // Both outcomes share the first part of the push, then split.
+      var br = ease((pu - 0.3) / 0.7);
+      obj = kind === 0 ? { s: 24 * Math.min(pu, 0.3) + 24 * Math.max(0, pu - 0.3) + 96 * br, l: 0, d: 0 }
+                       : { s: 24 * Math.min(pu, 0.3) + 6.8 * br, l: 0, d: 90 * br };
+      tip = { x: BOX.x - 30 + 30 * ap + (t > 0.55 ? 24 * pu : 0), y: GROUND - 40 };
+      open = 10; ang = -Math.PI / 2;
+    } else if (skillName === "pick") {
+      var down = ease(t / 0.6), close = ease((t - 0.6) / 0.3), up = ease((t - 0.9) / 1.0);
+      var lift = 56 * up;
+      // A failed grasp: the object is dragged up a little, slips out, and settles back.
+      var slip = up < 0.45 ? Math.sin(Math.PI * up / 0.45) : 0;
+      obj = kind === 0 ? { s: 50, l: lift, d: 0 } : { s: 50, l: 20 * slip, d: 9 * slip };
+      tip = { x: cx + 50, y: GROUND - GRASP_H - 40 * (1 - down) - lift };
+      open = 38 - 12 * close;
+    } else {
+      var rel = ease((t - 0.6) / 0.2), fall = clip((t - 0.7) / 0.4, 0, 1), tp = ease((t - 1.1) / 0.7), away = ease((t - 0.9) / 0.7);
+      obj = { s: 50 + (kind === 1 ? 6 * tp : 0), l: 44 * (1 - fall * fall), d: kind === 1 ? 90 * tp : 0 };
+      tip = { x: cx + 50, y: GROUND - 30 - 44 - 22 * away };
+      open = 26 + 12 * rel;
+    }
+    return { obj: obj, tip: tip, open: open, ang: ang };
+  }
+
+  // A single-prediction panel: the predicted pose moves out from the start pose.
+  function drawModel(ctx, col, colorOf, samples, trial, t, fade) {
+    ground(ctx, col); ghostStart(ctx, col);
+    if (skill.ghostGripper) gripper(ctx, BOX.x + BOX.w / 2 + skill.A.s, GROUND - GRASP_H - skill.A.l, BOX.w, 0, col.muted, 0.2 * fade, null);
+    var cur = mix(skill.start, samples[trial], ease((t - 0.6) / 1.2)), color = colorOf(trial);
+    shadow(ctx, cur, col, fade);
+    drawBox(ctx, cur, { fill: color, fa: 0.2 * fade, band: color, ba: 0.5 * fade, stroke: color, la: fade, lw: 2 });
+  }
+
+  // A distribution panel: all samples leave the start pose together and spread to where the model puts them.
+  function drawCloud(ctx, col, colorOf, samples, t, fade, strong) {
+    ground(ctx, col); ghostStart(ctx, col);
+    if (skill.ghostGripper) gripper(ctx, BOX.x + BOX.w / 2 + skill.A.s, GROUND - GRASP_H - skill.A.l, BOX.w, 0, col.muted, 0.2 * fade, null);
+    var k = ease((t - 0.6) / 1.2), settled = ease((t - 1.7) / 0.4);
+    for (var pass = 0; pass < 2; pass++) {
+      for (var n = 0; n < samples.length; n++) {
+        var on = strong(n);
+        if ((pass === 1) !== on) continue;             // emphasized samples are drawn on top
+        var a = fade * (on ? 1 : 1 - 0.45 * settled), c = colorOf(n);
+        drawBox(ctx, mix(skill.start, samples[n], k), { fill: c, fa: (on ? 0.16 : 0.08) * a, band: c, ba: 0.4 * a, stroke: c, la: (on ? 1 : 0.75) * a, lw: on ? 1.9 : 1.2 });
+      }
+    }
+  }
+
+  // Two outcome pills side by side, centered under the scene.
+  function label2(ctx, texts, colors, col, a) {
+    ctx.save();
+    ctx.font = "600 16px 'IBM Plex Sans', Arial, sans-serif";
+    var w0 = ctx.measureText(texts[0]).width + 22, w1 = ctx.measureText(texts[1]).width + 22, gap = 8;
+    var x = SW / 2 - (w0 + w1 + gap) / 2, y = GROUND + 11;
+    ctx.globalAlpha = a;
+    [[texts[0], colors[0], x, w0], [texts[1], colors[1], x + w0 + gap, w1]].forEach(function (q) {
+      rr(ctx, q[2], y, q[3], 21, 10.5); ctx.fillStyle = q[1]; ctx.fill();
+      ctx.fillStyle = col.surface; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText(q[0], q[2] + q[3] / 2, y + 11);
+    });
+    ctx.restore();
+  }
+
+  // One execution. The object is a single box until the two outcomes diverge,
+  // then each branch takes its own color, so the split itself is what the viewer sees.
+  // A short label placed next to a pose, in scene units.
+  var ANCH = {
+    push:  { A: [197, 70, "center"], B: [132, 168, "center"], det: [133, 66, "center"], gauss: [133, 60, "center"] },
+    pick:  { A: [156, 64, "left"],   B: [156, 120, "left"],  det: [156, 64, "left"],   gauss: [158, 100, "left"] },
+    place: { A: [127, 74, "center"], B: [150, 108, "left"], det: [127, 32, "center"], gauss: [127, 32, "center"] }
+  };
+  function tagAt(ctx, key, text, color, a) {
+    var p = ANCH[skillName][key];
+    ctx.save(); ctx.globalAlpha = a;
+    // Largest size up to 26 that still fits inside the scene from this anchor.
+    var room = p[2] === "left" ? SW - 4 - p[0] : p[2] === "right" ? p[0] - 4 : 2 * Math.min(p[0], SW - p[0]) - 8;
+    var fs = 22;
+    do { ctx.font = "700 " + fs + "px Inter, 'IBM Plex Sans', Arial, sans-serif"; } while (ctx.measureText(text).width > room && --fs > 14);
+    ctx.textAlign = p[2]; ctx.textBaseline = "middle";
+    ctx.lineWidth = 4; ctx.strokeStyle = css("--surface"); ctx.strokeText(text, p[0], p[1]);
+    ctx.fillStyle = color; ctx.fillText(text, p[0], p[1]);
+    ctx.restore();
+  }
+
+  function drawReality(ctx, col, t, fade) {
+    ground(ctx, col);
+    var s0 = realState(t, 0), s1 = realState(t, 1);
+    var diff = Math.abs(s0.obj.s - s1.obj.s) + Math.abs(s0.obj.l - s1.obj.l) + Math.abs(s0.obj.d - s1.obj.d) / 3;
+    var k = clip(diff / 10, 0, 1) * fade;
+    var c0 = css("--right"), c1 = css("--right2");
+    if (k <= 0) {
+      shadow(ctx, s0.obj, col, fade);
+      drawBox(ctx, s0.obj, { fill: col.surface, fa: fade, band: col.accent, ba: 0.4 * fade, stroke: col.ink, la: fade, lw: 2 });
+    } else {
+      [[s1, c1], [s0, c0]].forEach(function (q) {
+        shadow(ctx, q[0].obj, col, fade);
+        drawBox(ctx, q[0].obj, { fill: col.surface, fa: fade, stroke: col.ink, la: fade * (1 - k), lw: 2 });
+        drawBox(ctx, q[0].obj, { fill: q[1], fa: 0.3 * k, band: q[1], ba: 0.9 * k, stroke: q[1], la: k, lw: 2.4 });
+      });
+    }
+    gripper(ctx, s0.tip.x, s0.tip.y, s0.open, s0.ang, col.accent, fade, col.ink);
+    if (t > 2.0) { var la = fade * ease((t - 2.0) / 0.3); tagAt(ctx, "A", skill.labels[0], c0, la); tagAt(ctx, "B", skill.labels[1], c1, la); }
+  }
+
+  function draw(cv, clock) {
+    var ctx = setup(cv);
+    var col = { ink: css("--ink"), muted: css("--muted"), line: css("--line"), surface: css("--surface"), accent: css("--accent") };
+    ctx.clearRect(-1000, -1000, 3000, 3000);
+    var cycle = TRIAL * N;
+    var c = ((clock % cycle) + cycle) % cycle;
+    var trial = Math.min(N - 1, Math.floor(c / TRIAL)), t = c - trial * TRIAL;
+    var trialFade = t > TRIAL - 0.45 ? 1 - (t - (TRIAL - 0.45)) / 0.45 : 1;
+    var mode = cv.getAttribute("data-mode");
+
+    if (mode === "reality") {
+      drawReality(ctx, col, t, trialFade);
+    } else if (mode === "det") {
+      // Wrong predictions are drawn in red and labeled next to the prediction.
+      drawModel(ctx, col, function () { return css("--bad"); }, [skill.det], 0, t, trialFade);
+      if (t > 2.0) tagAt(ctx, "det", "\u2717 " + skill.detLabel, css("--bad"), trialFade * ease((t - 2.0) / 0.3));
+    } else if (mode === "gauss") {
+      drawCloud(ctx, col, function () { return css("--bad"); }, skill.gauss, t, trialFade, function () { return true; });
+      if (t > 2.0) tagAt(ctx, "gauss", "\u2717 " + skill.gaussLabel, css("--bad"), trialFade * ease((t - 2.0) / 0.3));
+    } else {
+      // The two modes take the colors of the two real branches, so this panel mirrors "What happens".
+      var modeColor = function (n) { return css(n % 2 === 0 ? "--right" : "--right2"); };
+      drawCloud(ctx, col, modeColor, skill.multi, t, trialFade, function () { return true; });
+      if (t > 2.0) { var lm = trialFade * ease((t - 2.0) / 0.3); tagAt(ctx, "A", "\u2713 " + skill.labels[0], modeColor(0), lm); tagAt(ctx, "B", "\u2713 " + skill.labels[1], modeColor(1), lm); }
+    }
+  }
+
+  function applyTexts() {
+    el("say-reality").textContent = skill.say.reality;
+    el("say-det").textContent = skill.say.det;
+    el("say-gauss").textContent = skill.say.gauss;
+    el("say-multi").textContent = skill.say.multi;
+    for (var n = 0; n < canvases.length; n++) {
+      var m = canvases[n].getAttribute("data-mode");
+      canvases[n].setAttribute("aria-label", m === "reality" ? skill.aria : skill.say[m]);
+    }
+  }
+
+  var running = !reduce, start = null, held = TRIAL * (N - 1) + 2.4, raf = null;
+  var auto = true;                        // switch skills on its own until the viewer picks one
+  function frameAll(clock) { for (var n = 0; n < canvases.length; n++) draw(canvases[n], clock); }
+  function loop(ts) {
+    if (start === null) start = ts - held * 1000;
+    held = (ts - start) / 1000;
+    progress(held / (TRIAL * N));
+    if (held >= TRIAL * N) {
+      if (auto) { setSkill(ORDER[(ORDER.indexOf(skillName) + 1) % ORDER.length]); }
+      else { held = 0; play(); }               // a chosen skill keeps looping
+      return;
+    }
+    frameAll(held);
+    if (running) raf = requestAnimationFrame(loop);
+  }
+  function play() { running = true; start = null; if (raf) cancelAnimationFrame(raf); raf = requestAnimationFrame(loop); }
+  function pause() { running = false; if (raf) cancelAnimationFrame(raf); frameAll(held); }
+
+  // The active tab fills up while its skill plays, so the automatic switch is expected.
+  function progress(f) {
+    tabs.forEach(function (o) { o.style.setProperty("--p", auto && o.getAttribute("data-skill") === skillName ? clip(f, 0, 1) : 0); });
+  }
+  function setSkill(name) {
+    skillName = name; skill = SKILLS[name];
+    tabs.forEach(function (o) { o.setAttribute("aria-pressed", o.getAttribute("data-skill") === name ? "true" : "false"); });
+    applyTexts();
+    // A running animation restarts from the first trial. A paused one shows the finished cycle.
+    if (running) { held = 0; play(); } else { held = TRIAL * (N - 1) + 2.4; frameAll(held); }
+  }
+  tabs.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      auto = false; hint.textContent = "Showing one skill. Click another to switch.";
+      setSkill(btn.getAttribute("data-skill"));
+    });
+  });
+  window.addEventListener("resize", function () { if (!running) frameAll(held); });
+  if (window.matchMedia) {
+    var mq = window.matchMedia("(prefers-color-scheme: dark)");
+    if (mq.addEventListener) mq.addEventListener("change", function () { if (!running) frameAll(held); });
+  }
+
+  // First frame is a complete resting state: every sample drawn, the last trial finished.
+  applyTexts();
+  frameAll(held);
+  toggle.addEventListener("click", function () {
+    if (running) { pause(); toggle.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 2.8v10.4a.8.8 0 0 0 1.2.7l8.2-5.2a.8.8 0 0 0 0-1.4L5.7 2.1a.8.8 0 0 0-1.2.7z"/></svg><span>Play</span>'; toggle.setAttribute("aria-pressed", "true"); }
+    else { play(); toggle.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="2.5" width="3" height="11" rx="1"/><rect x="9.5" y="2.5" width="3" height="11" rx="1"/></svg><span>Pause</span>'; toggle.setAttribute("aria-pressed", "false"); }
+  });
+  if (reduce) { toggle.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 2.8v10.4a.8.8 0 0 0 1.2.7l8.2-5.2a.8.8 0 0 0 0-1.4L5.7 2.1a.8.8 0 0 0-1.2.7z"/></svg><span>Play</span>'; toggle.setAttribute("aria-pressed", "true"); }
+  else { held = 0; play(); }
+})();
+</script>
+<script>
+// Title: land once on load. Hover or click lands it again.
+(function () {
+  var h = document.getElementById("title"); if (!h) return;
+  var busy = true;
+  h.classList.add("land");
+  h.addEventListener("animationend", function () { busy = false; });
+  function replay() {
+    if (busy) return;
+    busy = true; h.classList.remove("land"); void h.offsetWidth; h.classList.add("land");
+  }
+  h.addEventListener("click", replay);
+  h.addEventListener("mouseenter", replay);
+})();
+// Real-robot bars grow and their counts tick up when they come into view.
+(function () {
+  var bars = document.querySelector(".bars"); if (!bars) return;
+  var nums = Array.prototype.slice.call(bars.querySelectorAll(".num"));
+  var finals = nums.map(function (n) { return n.textContent; });
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduce || !("IntersectionObserver" in window)) { bars.classList.add("go"); return; }
+  nums.forEach(function (n, i) { n.textContent = "0/" + finals[i].split("/")[1]; });
+  var io = new IntersectionObserver(function (es) {
+    if (!es[0].isIntersecting) return;
+    io.disconnect(); bars.classList.add("go");
+    var t0 = performance.now();
+    (function tick(now) {
+      var done = true;
+      nums.forEach(function (n, i) {
+        var parts = finals[i].split("/"), k = +parts[0];
+        var f = Math.min(1, Math.max(0, (now - t0 - i * 120) / 1300));
+        f = 1 - Math.pow(1 - f, 3);
+        n.textContent = Math.round(k * f) + "/" + parts[1];
+        if (f < 1) done = false;
+      });
+      if (!done) requestAnimationFrame(tick);
+    })(t0);
+  }, { threshold: 0.5 });
+  io.observe(bars);
+})();
+// Scroll reveal: blocks of each section appear one after another as they enter the viewport.
+(function () {
+  if (!("IntersectionObserver" in window)) return;
+  var items = [];
+  document.querySelectorAll("section .wrap").forEach(function (wrap, si) {
+    if (si === 0) return;                       // the animation bench is visible from the start
+    Array.prototype.forEach.call(wrap.children, function (child) {
+      var group = child.matches(".findings, .cards") ? child.children : [child];
+      Array.prototype.forEach.call(group, function (node, k) {
+        node.classList.add("rv"); node.style.transitionDelay = (k * 140) + "ms"; items.push(node);
+      });
+    });
+  });
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+  }, { rootMargin: "0px 0px -8% 0px", threshold: 0.12 });
+  items.forEach(function (node) { io.observe(node); });
+})();
+</script>
+<script>
+// Decoder illustration: the same two-outcome distribution, built three ways.
+(function () {
+  var cvs = Array.prototype.slice.call(document.querySelectorAll(".decs canvas"));
+  if (!cvs.length) return;
+  var W = 300, H = 180, L = 14, R = W - 14, BASE = 146, TOP = 22;
+  var BUILD = 3.2, HOLD = 3.4, FADE = 0.5, CYCLE = BUILD + HOLD + FADE;
+  var MA = 0.3, MB = 0.72;                                  // the two outcomes on the pose-change axis
+  function css(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+  function clip(v, a, b) { return Math.max(a, Math.min(b, v)); }
+  function ease(v) { v = clip(v, 0, 1); return v * v * (3 - 2 * v); }
+  function npdf(x, m, sd) { var z = (x - m) / sd; return Math.exp(-0.5 * z * z) / (sd * 2.5066); }
+  function target(x) { return 0.55 * npdf(x, MA, 0.055) + 0.45 * npdf(x, MB, 0.05); }
+  var PMAX = target(MA) * 1.08;
+  function X(u) { return L + u * (R - L); }
+  function Y(p) { return BASE - (p / PMAX) * (BASE - TOP); }
+
+  // MDN components: evenly spread at the start, fitted to the two outcomes at the end.
+  var COMP_END = [[0.24, 0.27, 0.05], [0.19, 0.33, 0.05], [0.12, 0.30, 0.08], [0.25, 0.71, 0.045], [0.20, 0.74, 0.05]];
+  var COMP_START = [[0.2, 0.1, 0.13], [0.2, 0.3, 0.13], [0.2, 0.5, 0.13], [0.2, 0.7, 0.13], [0.2, 0.9, 0.13]];
+
+  // Flow matching particles: noise z and the sample x1 it is carried to, on straight paths.
+  function rng(seed) { return function () { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }; }
+  function gs(r) { return Math.sqrt(-2 * Math.log(r() + 1e-9)) * Math.cos(6.2832 * r()); }
+  var r = rng(7), PARTS = [];
+  for (var i = 0; i < 70; i++) {
+    var a = r() < 0.55;
+    PARTS.push({ z: clip(0.5 + 0.2 * gs(r), 0.03, 0.97), x: clip(a ? MA + 0.05 * gs(r) : MB + 0.045 * gs(r), 0.02, 0.98), a: a });
+  }
+  var zs = PARTS.map(function (p) { return p.z; }).sort(function (u, v) { return u - v; });
+  var xs = PARTS.map(function (p) { return p.x; }).sort(function (u, v) { return u - v; });
+  PARTS = zs.map(function (z, j) { return { z: z, x: xs[j], a: xs[j] < 0.5 }; });
+  var STEPS = 5;
+
+  function setup(cv) {
+    var rect = cv.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
+    cv.width = Math.max(1, Math.round(rect.width * dpr)); cv.height = Math.max(1, Math.round(rect.height * dpr));
+    var ctx = cv.getContext("2d"), k = Math.min(cv.width / W, cv.height / H);
+    ctx.setTransform(k, 0, 0, k, (cv.width - W * k) / 2, (cv.height - H * k) / 2);
+    ctx.clearRect(-50, -50, W + 100, H + 100);
+    return ctx;
+  }
+  function axis(ctx, col, a) {
+    ctx.save(); ctx.globalAlpha = a;
+    ctx.strokeStyle = col.muted; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(L, BASE + 0.5); ctx.lineTo(R, BASE + 0.5); ctx.stroke();
+    ctx.font = "700 13px 'IBM Plex Sans', Arial, sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "top";
+    ctx.fillStyle = col.right; ctx.fillText("Mode A", X(MA), BASE + 7);
+    ctx.fillStyle = col.right2; ctx.fillText("Mode B", X(MB), BASE + 7);
+    ctx.restore();
+  }
+  function ghost(ctx, col, a) {
+    ctx.save(); ctx.globalAlpha = 0.6 * a; ctx.strokeStyle = col.muted; ctx.setLineDash([3, 4]); ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (var u = 0; u <= 1.0001; u += 0.01) { var y = Y(target(u)); if (u === 0) ctx.moveTo(X(u), y); else ctx.lineTo(X(u), y); }
+    ctx.stroke(); ctx.restore();
+  }
+  function curve(ctx, f) {
+    ctx.beginPath(); ctx.moveTo(X(0), BASE);
+    for (var u = 0; u <= 1.0001; u += 0.005) ctx.lineTo(X(u), Y(f(u)));
+    ctx.lineTo(X(1), BASE);
+  }
+
+  function drawMDN(ctx, col, k, a) {
+    var comps = COMP_START.map(function (c, j) { var e = COMP_END[j]; return [c[0] + (e[0] - c[0]) * k, c[1] + (e[1] - c[1]) * k, c[2] + (e[2] - c[2]) * k]; });
+    function sum(u) { var v = 0; comps.forEach(function (c) { v += c[0] * npdf(u, c[1], c[2]); }); return v; }
+    ctx.save(); ctx.globalAlpha = a;
+    curve(ctx, sum); ctx.fillStyle = col.mdn; ctx.globalAlpha = 0.16 * a; ctx.fill();
+    ctx.globalAlpha = a; ctx.strokeStyle = col.mdn; ctx.lineWidth = 2; ctx.stroke();
+    comps.forEach(function (c) {                                // each component as a thin outline
+      ctx.globalAlpha = 0.55 * a; ctx.lineWidth = 1; ctx.setLineDash([2, 3]);
+      curve(ctx, function (u) { return c[0] * npdf(u, c[1], c[2]); }); ctx.stroke();
+    });
+    ctx.restore();
+  }
+  function drawST(ctx, col, k, a) {
+    var NB = 30, bw = (R - L) / NB;
+    ctx.save();
+    for (var b = 0; b < NB; b++) {
+      var u = (b + 0.5) / NB, kk = ease((k * 1.6) - (b / NB) * 0.6);
+      var h = (BASE - Y(target(u))) * kk;
+      ctx.globalAlpha = a * (0.35 + 0.65 * clip(target(u) / PMAX * 1.5, 0, 1));
+      ctx.fillStyle = col.st;
+      ctx.fillRect(L + b * bw + 1, BASE - h, bw - 2, h);
+    }
+    ctx.restore();
+  }
+  function drawFM(ctx, col, k, a) {
+    // Noise samples start at the top and are carried down to the pose-change axis in five steps.
+    // Once they land, their density is drawn like the other panels so the three results compare directly.
+    var y0 = TOP + 2, y1 = BASE, s = Math.min(1, k / 0.8) * STEPS, done = Math.floor(s), part = ease(s - done);
+    var tNow = Math.min(STEPS, done + part) / STEPS, landed = ease((k - 0.8) / 0.2);
+    ctx.save();
+    ctx.globalAlpha = 0.45 * a; ctx.strokeStyle = col.line; ctx.lineWidth = 1;
+    for (var q = 0; q < STEPS; q++) { var yy = y0 + (y1 - y0) * q / STEPS; ctx.beginPath(); ctx.moveTo(L, yy); ctx.lineTo(R, yy); ctx.stroke(); }
+    PARTS.forEach(function (p) {
+      function at(t) { return [X((1 - t) * p.z + t * p.x), y0 + (y1 - y0) * t]; }
+      var cur = at(tNow);
+      ctx.globalAlpha = 0.22 * a * (1 - 0.6 * landed); ctx.strokeStyle = col.fm; ctx.lineWidth = 1;
+      ctx.beginPath(); var st = at(0); ctx.moveTo(st[0], st[1]);
+      for (var q = 1; q <= done && q <= STEPS; q++) { var pt = at(q / STEPS); ctx.lineTo(pt[0], pt[1]); }
+      ctx.lineTo(cur[0], cur[1]); ctx.stroke();
+      ctx.globalAlpha = a * (1 - 0.5 * landed); ctx.fillStyle = col.fm;
+      ctx.beginPath(); ctx.arc(cur[0], cur[1], 2.2, 0, 6.2832); ctx.fill();
+    });
+    if (landed > 0) {
+      // Kernel density of the landed samples, scaled to the same height as the other panels.
+      var kde = function (u) { var v = 0; PARTS.forEach(function (p) { v += npdf(u, p.x, 0.035); }); return v / PARTS.length; };
+      var peak = 0; for (var u = 0; u <= 1; u += 0.01) peak = Math.max(peak, kde(u));
+      var sc = (target(MA) / peak) * landed;
+      curve(ctx, function (u) { return kde(u) * sc; });
+      ctx.globalAlpha = 0.18 * a; ctx.fillStyle = col.fm; ctx.fill();
+      ctx.globalAlpha = a; ctx.strokeStyle = col.fm; ctx.lineWidth = 2; ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+
+  // The two baselines on the same axis: one point between the outcomes, or one broad bump over both.
+  var MEAN = 0.55 * MA + 0.45 * MB;
+  var GSD = Math.sqrt(0.55 * (0.055 * 0.055 + (MA - MEAN) * (MA - MEAN)) + 0.45 * (0.05 * 0.05 + (MB - MEAN) * (MB - MEAN)));
+  function badTag(ctx, col, text, a) {
+    ctx.save(); ctx.globalAlpha = a; ctx.font = "700 14px 'IBM Plex Sans', Arial, sans-serif";
+    ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillStyle = col.bad;
+    ctx.fillText(text, X(MEAN), TOP - 6); ctx.restore();
+  }
+  function drawDET(ctx, col, k, a) {
+    var h = (BASE - TOP) * 0.92 * k;
+    ctx.save(); ctx.globalAlpha = a; ctx.strokeStyle = col.bad; ctx.fillStyle = col.bad; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(X(MEAN), BASE); ctx.lineTo(X(MEAN), BASE - h); ctx.stroke();
+    ctx.beginPath(); ctx.arc(X(MEAN), BASE - h, 5, 0, 6.2832); ctx.fill(); ctx.restore();
+    if (k > 0.9) badTag(ctx, col, "\u2717 between the outcomes", a * ease((k - 0.9) / 0.1));
+  }
+  function drawGAUSS(ctx, col, k, a) {
+    ctx.save(); ctx.globalAlpha = a;
+    curve(ctx, function (u) { return npdf(u, MEAN, GSD) * k; });
+    ctx.fillStyle = col.bad; ctx.globalAlpha = 0.16 * a; ctx.fill();
+    ctx.globalAlpha = a; ctx.strokeStyle = col.bad; ctx.lineWidth = 2; ctx.stroke(); ctx.restore();
+    if (k > 0.9) badTag(ctx, col, "\u2717 smeared over both", a * ease((k - 0.9) / 0.1));
+  }
+
+  function frame(clock) {
+    var col = { muted: css("--muted"), line: css("--line"), right: css("--right"), right2: css("--right2"), mdn: css("--mdn"), st: css("--st"), fm: css("--fm"), det: css("--det"), bad: css("--bad"), surface: css("--surface") };
+    var c = clock % CYCLE, k = ease(c / BUILD), a = c > BUILD + HOLD ? 1 - (c - BUILD - HOLD) / FADE : 1;
+    cvs.forEach(function (cv) {
+      var ctx = setup(cv), d = cv.getAttribute("data-dec");
+      ghost(ctx, col, 1);
+      if (d === "mdn") drawMDN(ctx, col, k, a);
+      else if (d === "st") drawST(ctx, col, k, a);
+      else if (d === "det") drawDET(ctx, col, k, a);
+      else if (d === "gauss") drawGAUSS(ctx, col, k, a);
+      else drawFM(ctx, col, c / BUILD > 1 ? 1 : c / BUILD, a);
+      axis(ctx, col, 1);
+    });
+  }
+
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var raf = null, t0 = null, visible = false;
+  function loop(ts) { if (t0 === null) t0 = ts; frame((ts - t0) / 1000); if (visible) raf = requestAnimationFrame(loop); }
+  if (reduce || !("IntersectionObserver" in window)) { frame(BUILD + 0.1); }
+  else {
+    frame(0);
+    // Run only while the panels are on screen, and start from the beginning each time they appear.
+    new IntersectionObserver(function (es) {
+      visible = es[0].isIntersecting;
+      if (visible) { t0 = null; raf = requestAnimationFrame(loop); } else if (raf) cancelAnimationFrame(raf);
+    }, { threshold: 0.3 }).observe(document.getElementById("decs"));
+  }
+  window.addEventListener("resize", function () { if (!visible) frame(BUILD + 0.1); });
+})();
+</script>
+<script>
+// Prediction examples: one clip at a time. Plays through them in order until a tab is chosen, then loops that one.
+(function () {
+  var tabs = Array.prototype.slice.call(document.querySelectorAll("#predtabs .ptab"));
+  var vids = Array.prototype.slice.call(document.querySelectorAll("#predview video"));
+  var btn = document.getElementById("predtoggle"), hint = document.getElementById("pred-hint");
+  if (!tabs.length) return;
+  var PAUSE_HTML = btn.innerHTML;
+  var PLAY_HTML = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 2.8v10.4a.8.8 0 0 0 1.2.7l8.2-5.2a.8.8 0 0 0 0-1.4L5.7 2.1a.8.8 0 0 0-1.2.7z"/></svg><span>Play</span>';
+  var auto = true, cur = 0, inView = false, paused = false;
+  function sync() {
+    var v = vids[cur];
+    if (inView && !paused) v.play().catch(function () {}); else v.pause();
+    btn.innerHTML = paused ? PLAY_HTML : PAUSE_HTML;
+    btn.setAttribute("aria-pressed", paused ? "true" : "false");
+  }
+  function show(i) {
+    cur = i;
+    tabs.forEach(function (t, k) { t.setAttribute("aria-selected", k === i ? "true" : "false"); t.style.setProperty("--p", auto ? 0 : 1); });
+    vids.forEach(function (v, k) { if (k === i) { v.hidden = false; v.loop = !auto; v.currentTime = 0; } else { v.hidden = true; v.pause(); } });
+    sync();
+  }
+  vids.forEach(function (v, k) {
+    v.addEventListener("timeupdate", function () { if (auto && k === cur && v.duration) tabs[k].style.setProperty("--p", v.currentTime / v.duration); });
+    v.addEventListener("ended", function () { if (auto && k === cur) show((cur + 1) % vids.length); });
+  });
+  tabs.forEach(function (t, k) { t.addEventListener("click", function () {
+    auto = false; paused = false; hint.textContent = "Showing one example. Click another tab to switch."; show(k);
+  }); });
+  // Pausing holds the current frame; playing resumes from there.
+  btn.addEventListener("click", function () { paused = !paused; sync(); });
+  var view = document.getElementById("predview");
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(function (es) { inView = es[0].isIntersecting; sync(); }, { threshold: 0.25 }).observe(view);
+  } else { inView = true; }
+  show(0);
+})();
+</script>
+</body>
+</html>
