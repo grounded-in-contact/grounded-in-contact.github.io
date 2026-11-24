@@ -265,6 +265,10 @@ tbody tr.hl th { box-shadow: inset 4px 0 0 var(--accent); }
 @media (prefers-reduced-motion: reduce) { .fill { transform: none; transition: none; } }
 .bar-row .num { font-family: var(--font-mono); font-size: 0.85rem; font-variant-numeric: tabular-nums; text-align: right; }
 
+.bib { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+.bib pre { margin: 0; padding: 18px 20px; overflow-x: auto; font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.55; color: var(--ink); }
+.bib button { position: absolute; top: 10px; right: 10px; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); color: var(--muted); font: 500 0.8rem var(--font-body); cursor: pointer; }
+.bib button:hover { color: var(--ink); }
 footer { padding: 28px 0 56px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.9rem; }
 
 @media (max-width: 900px) {
@@ -446,7 +450,7 @@ section[aria-labelledby="robot"] .split > .stack:first-child { text-align: cente
     </p>
     <p class="affil"><sup>1</sup>University of Utah&ensp;<sup>2</sup>NVIDIA Research<br><sup>&dagger;</sup>Equal contribution</p>
     <div class="links">
-      <span class="btn off" aria-disabled="true">Paper <small>arXiv soon</small></span>
+      <a class="btn" href="https://arxiv.org/abs/2611.29662" target="_blank" rel="noopener">Paper <small>arXiv</small></a>
       <span class="btn off" aria-disabled="true">Code <small>soon</small></span>
       <span class="btn off" aria-disabled="true">Video <small>soon</small></span>
     </div>
@@ -600,6 +604,24 @@ section[aria-labelledby="robot"] .split > .stack:first-child { text-align: cente
       <div class="plate vid"><video src="media/real_multistep.mp4" autoplay muted loop playsinline preload="metadata" aria-label="Push, pick, and place on the real robot for each of the five models, played at six times speed. Only flow matching completes all three steps."></video></div>
       <figcaption><strong>Only flow matching completes all three steps,</strong> while the others miss a step or end in the wrong pose.<br>Push &rarr; pick &rarr; place from the same start toward the same goal. One run per model, each planning the whole sequence with its own predictions. Played at 6&times; speed.</figcaption>
     </figure>
+  </div>
+</section>
+
+<section aria-labelledby="bibtex">
+  <div class="wrap stack">
+    <h2 id="bibtex">BibTeX</h2>
+    <div class="bib">
+      <button type="button" id="copybib">Copy</button>
+<pre id="bibtext">@misc{kim2026grounded_in_contact,
+  title={Grounded in Contact: Reducing Floating and Interpenetration Artifacts with Multimodal Skill-Effect Models},
+  author={Siyeon Kim and Mohanraj Devendran Shanthi and Joseph C. Liechty and Tucker Hermans},
+  year={2026},
+  eprint={2611.29662},
+  archivePrefix={arXiv},
+  primaryClass={cs.RO},
+  url={https://arxiv.org/abs/2611.29662}
+}</pre>
+    </div>
   </div>
 </section>
 
@@ -1252,6 +1274,18 @@ section[aria-labelledby="robot"] .split > .stack:first-child { text-align: cente
     new IntersectionObserver(function (es) { inView = es[0].isIntersecting; sync(); }, { threshold: 0.25 }).observe(view);
   } else { inView = true; }
   show(0);
+})();
+</script>
+<script>
+(function () {
+  var b = document.getElementById("copybib");
+  if (!b || !navigator.clipboard) return;
+  b.addEventListener("click", function () {
+    navigator.clipboard.writeText(document.getElementById("bibtext").textContent).then(function () {
+      b.textContent = "Copied";
+      setTimeout(function () { b.textContent = "Copy"; }, 1500);
+    });
+  });
 })();
 </script>
 </body>
